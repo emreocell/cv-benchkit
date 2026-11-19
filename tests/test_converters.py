@@ -90,6 +90,18 @@ class TestBBoxConversions:
         recovered = normalized_to_xyxy(norm, img_w=img_w, img_h=img_h)
         np.testing.assert_allclose(recovered, boxes)
 
+    def test_xyxy_to_normalized_single_1d_box(self) -> None:
+        box = np.array([64.0, 48.0, 320.0, 240.0])
+        norm = xyxy_to_normalized(box, img_w=640, img_h=480)
+        assert norm.shape == (1, 4)
+        np.testing.assert_allclose(norm[0], [0.3, 0.3, 0.4, 0.4])
+
+    def test_normalized_to_xyxy_single_1d_box(self) -> None:
+        box = np.array([0.3, 0.3, 0.4, 0.4])
+        xyxy = normalized_to_xyxy(box, img_w=640, img_h=480)
+        assert xyxy.shape == (1, 4)
+        np.testing.assert_allclose(xyxy[0], [64.0, 48.0, 320.0, 240.0])
+
     def test_empty_boxes(self) -> None:
         empty = np.empty((0, 4), dtype=np.float64)
         assert xyxy_to_xywh(empty).shape == (0, 4)
