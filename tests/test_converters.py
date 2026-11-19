@@ -320,6 +320,28 @@ class TestCOCOAnnotation:
         annotation = COCOAnnotation(id=1, image_id=1, category_id=1, bbox=[0, 0, 5, 4], area=area)
         assert annotation.area == area
 
+    @pytest.mark.parametrize("image_id", [-1, -100])
+    def test_rejects_negative_image_id(self, image_id: int) -> None:
+        with pytest.raises(ValidationError) as exc_info:
+            COCOAnnotation(id=1, image_id=image_id, category_id=1, bbox=[0, 0, 5, 4], area=20.0)
+
+        assert exc_info.value.errors()[0]["loc"] == ("image_id",)
+
+    @pytest.mark.parametrize("category_id", [-1, -5])
+    def test_rejects_negative_category_id(self, category_id: int) -> None:
+        with pytest.raises(ValidationError) as exc_info:
+            COCOAnnotation(id=1, image_id=1, category_id=category_id, bbox=[0, 0, 5, 4], area=20.0)
+
+        assert exc_info.value.errors()[0]["loc"] == ("category_id",)
+
+    @pytest.mark.parametrize("value", [0, 1, 42])
+    def test_accepts_zero_and_positive_ids(self, value: int) -> None:
+        annotation = COCOAnnotation(
+            id=1, image_id=value, category_id=value, bbox=[0, 0, 5, 4], area=20.0
+        )
+        assert annotation.image_id == value
+        assert annotation.category_id == value
+
 
 class TestCOCOImage:
     """Tests for COCOImage positive dimension validation (#44)."""

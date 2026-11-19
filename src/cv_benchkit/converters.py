@@ -60,8 +60,8 @@ class COCOAnnotation(BaseModel):
     """Minimal COCO annotation record with a finite, non-negative area."""
 
     id: int
-    image_id: int
-    category_id: int
+    image_id: int = Field(ge=0)
+    category_id: int = Field(ge=0)
     bbox: list[float]  # xywh
     area: float = Field(ge=0, allow_inf_nan=False)
     iscrowd: int = 0
